@@ -1,1 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management System</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
 
+        .main-wrapper {
+            width: 95%;
+            max-width: 1200px;
+            margin: 50px 0;
+        }
+
+        .inventory-card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            margin: 0 0 30px 0;
+            font-size: 28px;
+            color: #212529;
+            font-weight: 700;
+        }
+
+        /* Form Area */
+        .input-bar {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            margin-bottom: 35px;
+            align-items: center;
+        }
+
+        .input-bar input {
+            flex: 1;
+            height: 45px;
+            padding: 0 15px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .add-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            height: 45px;
+            padding: 0 30px;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Table Design */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background-color: #343a40;
+            color: #ffffff;
+            text-align: left;
+            padding: 18px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        /* Consistent lines for every row */
+        tbody td {
+            padding: 18px;
+            border-bottom: 1px solid #dee2e6; /* Consistent black/gray line */
+            font-size: 15px;
+            color: #000000; /* Ensuring text/numbers are black */
+        }
+
+        /* Red text for Out of Stock items */
+        .stock-alert {
+            color: #dc3545;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <div class="inventory-card">
+        <h1>Inventory Management System</h1>
+
+        <div class="input-bar">
+            <input type="text" id="prodName" placeholder="Product Name">
+            <input type="number" id="prodPrice" placeholder="Price">
+            <input type="number" id="prodStock" placeholder="Stock Quantity">
+            <button class="add-btn" onclick="addNewProduct()">Add Product</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Item Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryList">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let inventory = [
+        { id: 1, name: "Wireless Mouse", price: 25.00, stock: 10 },
+        { id: 2, name: "Keyboard", price: 45.00, stock: 0 },
+        { id: 3, name: "Galax Monitor", price: 50000.00, stock: 20 },
+        { id: 4, name: "RTX 9090 1/1", price: 1000000.00, stock: 1 },
+        { id: 5, name: "Gaming Speakers", price: 12345.00, stock: 123 }
+    ];
+
+    function renderTable() {
+        const list = document.getElementById("inventoryList");
+        list.innerHTML = ""; 
+
+        inventory.forEach(item => {
+            const row = document.createElement("tr");
+
+            const priceFormatted = "$" + item.price.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+            const stockStatus = item.stock === 0 
+                ? '<span class="stock-alert">Out of Stock</span>' 
+                : item.stock;
+
+            row.innerHTML = `
+                <td>${item.id}</td>
+                <td>${item.name}</td>
+                <td>${priceFormatted}</td>
+                <td>${stockStatus}</td>
+            `;
+            list.appendChild(row);
+        });
+    }
+
+    function addNewProduct() {
+        const nameVal = document.getElementById("prodName").value;
+        const priceVal = parseFloat(document.getElementById("prodPrice").value);
+        const stockVal = document.getElementById("prodStock").value;
+
+        if (!nameVal || isNaN(priceVal) || stockVal === "") return;
+
+        const nextId = inventory.length > 0 ? inventory[inventory.length - 1].id + 1 : 1;
+        inventory.push({ id: nextId, name: nameVal, price: priceVal, stock: parseInt(stockVal) });
+
+        renderTable();
+        document.getElementById("prodName").value = "";
+        document.getElementById("prodPrice").value = "";
+        document.getElementById("prodStock").value = "";
+    }
+
+    renderTable();
+</script>
+
+</body>
+</html>
