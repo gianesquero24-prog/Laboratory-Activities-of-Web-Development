@@ -1,1 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
 
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #D2B48C;
+            font-family: 'Segoe UI', sans-serif;
+            transition: background-color 0.5s ease;
+        }
+
+        .container {
+            text-align: center;
+            padding: 45px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            font-size: 40px;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 30px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 120px);
+            grid-template-rows: repeat(3, 120px);
+            gap: 12px;
+            margin: 30px auto;
+        }
+
+        .cell {
+            background-color: #F0F4F8;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #000000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cell:hover {
+            background-color: #D6EAF8;
+            transform: scale(1.05);
+        }
+
+        .reset-button {
+            margin-top: 30px;
+            padding: 20px 60px;
+            background-color: #3498db;
+            color: #FFFFFF;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .reset-button:hover {
+            background-color: #2C80B4;
+        }
+
+        /* Popup Style */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .new-game-btn {
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+        }
+
+        .new-game-btn:hover {
+            background: #2C80B4;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Tic-Tac-Toe</h1>
+
+    <div class="board">
+        <div class="cell">O</div>
+        <div class="cell">X</div>
+        <div class="cell">X</div>
+        <div class="cell">X</div>
+        <div class="cell">O</div>
+        <div class="cell">X</div>
+        <div class="cell">O</div>
+        <div class="cell">X</div>
+        <div class="cell">O</div>
+    </div>
+
+    <button class="reset-button">Reset Game</button>
+</div>
+
+<script>
+    const cells = document.querySelectorAll('.cell');
+    const resetBtn = document.querySelector('.reset-button');
+    const body = document.body;
+
+    let currentPlayer = "X";
+    let gameActive = true;
+    let counter = 0;
+
+    const winConditions = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+    ];
+
+    function incrementCounter() {
+        counter++;
+    }
+
+    function changeBackground(result) {
+        if (result === "X") {
+            body.style.backgroundColor = "#AED6F1";
+        } 
+        else if (result === "O") {
+            body.style.backgroundColor = "#A9DFBF";
+        } 
+        else {
+            body.style.backgroundColor = "#F9E79F";
+        }
+    }
+
+    function checkWinner() {
+        for (let condition of winConditions) {
+            const [a,b,c] = condition;
+
+            if (
+                cells[a].textContent &&
+                cells[a].textContent === cells[b].textContent &&
+                cells[a].textContent === cells[c].textContent
+            ) {
+                gameActive = false;
+                showPopup("Congratulations, Winner is " + cells[a].textContent);
+                changeBackground(cells[a].textContent);
+                return;
+            }
+        }
+
+        if (counter === 9) {
+            gameActive = false;
+            showPopup("It's a Draw!");
+            changeBackground("draw");
+        }
+    }
+
+    function handleClick(e) {
+        if (!gameActive) return;
+
+        if (e.target.textContent === "") {
+            e.target.textContent = currentPlayer;
+            incrementCounter();
+            checkWinner();
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+        }
+    }
+
+    function resetGame() {
+        cells.forEach(cell => cell.textContent = "");
+        currentPlayer = "X";
+        gameActive = true;
+        counter = 0;
+        body.style.backgroundColor = "#D2B48C";
+    }
+
+    function showPopup(message) {
+        const popup = document.createElement("div");
+        popup.classList.add("popup");
+
+        popup.innerHTML = `
+            <div class="popup-content">
+                ${message}
+                <br>
+                <button class="new-game-btn" onclick="newGame()">New Game</button>
+            </div>
+        `;
+
+        popup.id = "popup";
+        document.body.appendChild(popup);
+    }
+
+    function newGame() {
+        document.getElementById("popup").remove();
+        resetGame();
+    }
+
+    cells.forEach(cell => cell.addEventListener("click", handleClick));
+    resetBtn.addEventListener("click", resetGame);
+</script>
+</body>
+</html>
